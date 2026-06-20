@@ -1,0 +1,12 @@
+atlas,source,labels,features,raw_rows,raw_csv,chaikin_csv,raw_mb,chaikin_mb
+brainnetome,ggsegBrainnetome::brainnetome,210,261,17691,brainnetome_polygons.csv,brainnetome_polygons_chaikin.csv,2.42,3.99
+destrieux,ggsegDestrieux::destrieux,148,210,67754,destrieux_polygons.csv,destrieux_polygons_chaikin.csv,10.0,17.01
+dk,ggseg::dk,70,204,3233,dk_polygons.csv,dk_polygons_chaikin.csv,0.33,0.45
+dkt,ggsegDKT::dkt,62,96,1752,dkt_polygons.csv,dkt_polygons_chaikin.csv,0.21,0.33
+glasser,ggsegGlasser::glasser,360,436,106220,glasser_polygons.csv,glasser_polygons_chaikin.csv,12.71,20.82
+gordon,ggsegGordon::gordon,331,388,5333,gordon_polygons.csv,gordon_polygons_chaikin.csv,0.7,1.07
+power,ggsegPower::power,130,191,3324,power_polygons.csv,power_polygons_chaikin.csv,0.41,0.63
+schaefer17_100,ggsegSchaefer::schaefer17_100,100,142,50866,schaefer17_100_polygons.csv,schaefer17_100_polygons_chaikin.csv,9.06,15.88
+schaefer7_100,ggsegSchaefer::schaefer7_100,100,142,50866,schaefer7_100_polygons.csv,schaefer7_100_polygons_chaikin.csv,8.63,15.02
+yeo17,ggsegYeo2011::yeo17,34,162,56557,yeo17_polygons.csv,yeo17_polygons_chaikin.csv,7.24,12.0
+yeo7,ggsegYeo2011::yeo7,14,85,41688,yeo7_polygons.csv,yeo7_polygons_chaikin.csv,5.11,8.42

@@ -56,3 +56,24 @@ Output:
 - `assets/gallery/cortex_showcase.png`
 
 It should show Python/R parity and the subcortex-style audit in one image.
+
+## 5. Multi-atlas showcase
+
+Purpose: prove that the cortex skill is no longer DK-only and that multiple
+ggsegverse-derived atlas assets share the same flat, matte visual contract.
+
+Output:
+
+- `assets/gallery/multi_atlas_showcase.png`
+
+Generate with:
+
+```bash
+python scripts/make_multi_atlas_showcase.py \
+  --project-root . \
+  --output assets/gallery/multi_atlas_showcase.png
+```
+
+Default panels: DK, DKT, Yeo7, Schaefer7-100, Glasser, and Brainnetome. Colours
+are simulated for display; the point is atlas geometry/style coverage, not data
+interpretation.

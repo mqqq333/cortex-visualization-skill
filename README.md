@@ -11,6 +11,10 @@ Codex skill for reproducible 2D cortical atlas visualizations with Python/R dual
 
 <p align="center"><em>Locally generated cortex showcase: Python and R render the same Chaikin-smoothed ggseg-derived geometry and shared colours.</em></p>
 
+![Bundled cortex atlas showcase](assets/gallery/multi_atlas_showcase.png)
+
+<p align="center"><em>Bundled ggsegverse-derived cortex atlas assets rendered with the same flat, matte, Chaikin-smoothed visual contract.</em></p>
+
 This repository contains an interactive Codex skill for cortical region-level visualization. It guides an agent through backend choice, environment checks, atlas geometry selection, ROI label validation, Python/R parity rendering, style QC, and Methods/caption provenance.
 
 > This repository is an agent skill layer, not a fork or replacement of R `ggseg`, `ggseg3d`, `python-ggseg`, Workbench, FreeSurfer, or Nilearn. It does not vendor the ggseg paper PDF.
@@ -19,6 +23,7 @@ This repository contains an interactive Codex skill for cortical region-level vi
 
 - Choose **Python or R** before plotting.
 - Use R `ggseg` as the canonical polygon source.
+- Choose among bundled ggsegverse-derived cortex atlases, not only DK.
 - Render cortical atlas maps from ROI tables.
 - Validate ROI labels against shared atlas geometry.
 - Produce strict Python/R visual parity via shared polygon CSV and shared `fill_hex` colours.
@@ -39,6 +44,14 @@ python cortex-visualization/scripts/make_cortex_showcase.py \
 ```
 
 The underlying Python/R demo uses the same atlas coordinates and the same prejoined `fill_hex` colours.
+
+The multi-atlas gallery is generated from the bundled atlas CSVs:
+
+```bash
+python cortex-visualization/scripts/make_multi_atlas_showcase.py \
+  --project-root . \
+  --output assets/gallery/multi_atlas_showcase.png
+```
 
 ## Try it in 30 seconds
 
@@ -141,6 +154,37 @@ python cortex-visualization/scripts/smooth_polygon_atlas.py \
   --ratio 0.25
 ```
 
+The same raw-plus-Chaikin asset pattern is used for every bundled atlas, so
+Python and R can render the same geometry and colours regardless of atlas.
+
+## Bundled cortex atlases
+
+The repository now includes representative ggsegverse-derived cortical atlas
+assets. See `cortex-visualization/references/atlas_catalog.md` for exact file
+names, label counts, source package names, and sizes.
+
+| Atlas | Source | Labels | Best for |
+|---|---|---:|---|
+| DK | `ggseg::dk` | 70 | default anatomical demo and subcortex-style comparison |
+| DKT | `ggsegDKT::dkt` | 62 | FreeSurfer-style anatomical parcels |
+| Destrieux | `ggsegDestrieux::destrieux` | 148 | finer anatomical parcellation |
+| Yeo7 / Yeo17 | `ggsegYeo2011` | 14 / 34 | canonical functional networks |
+| Schaefer7-100 / Schaefer17-100 | `ggsegSchaefer` | 100 / 100 | functional parcellations |
+| Glasser | `ggsegGlasser::glasser` | 360 | fine HCP-MMP-style cortical parcels |
+| Brainnetome | `ggsegBrainnetome::brainnetome` | 210 | connectivity-oriented parcels |
+| Gordon | `ggsegGordon::gordon` | 331 | network/community parcellation |
+| Power | `ggsegPower::power` | 130 | functional node/network atlas |
+
+Every bundled atlas has:
+
+```text
+cortex-visualization/assets/atlases/<atlas>_polygons.csv
+cortex-visualization/assets/atlases/<atlas>_polygons_chaikin.csv
+```
+
+Use `*_polygons_chaikin.csv` for final flat-vector figures and keep
+`*_polygons.csv` for provenance/debugging.
+
 ## Environment support
 
 The skill includes a diagnostic helper:
@@ -160,12 +204,15 @@ cortex-visualization/
 |   `-- openai.yaml
 |-- assets/
 |   |-- atlases/
+|   |   |-- atlas_catalog.csv
 |   |   |-- dk_polygons.csv
-|   |   `-- dk_polygons_chaikin.csv
+|   |   |-- dk_polygons_chaikin.csv
+|   |   `-- ... additional ggsegverse-derived atlas CSVs
 |   `-- examples/
 |       `-- dk_demo_values.csv
 |-- references/
 |   |-- interactive_workflow.md
+|   |-- atlas_catalog.md
 |   |-- environment_setup.md
 |   |-- workflows.md
 |   |-- scene_recipes.md
@@ -176,7 +223,9 @@ cortex-visualization/
 `-- scripts/
     |-- check_cortex_environment.py
     |-- export_ggseg_atlas.R
+    |-- inspect_cortex_atlas.py
     |-- make_cortex_showcase.py
+    |-- make_multi_atlas_showcase.py
     |-- plot_cortex_table.py
     |-- plot_cortex_table.R
     |-- smooth_polygon_atlas.py
@@ -199,6 +248,7 @@ Gallery images live under `assets/gallery/`:
 
 ```text
 assets/gallery/cortex_showcase.png
+assets/gallery/multi_atlas_showcase.png
 assets/gallery/python_r_shared_dk_compare.png
 ```
 
