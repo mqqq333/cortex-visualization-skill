@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cortex Visualization"
+  short_description: "Reproducible 2D cortical atlas figures with Python/R backends."
+  default_prompt: "Use $cortex-visualization to validate a cortical ROI table and render matching Python/R SVG brain maps."

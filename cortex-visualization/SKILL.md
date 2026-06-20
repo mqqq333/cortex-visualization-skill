@@ -1,0 +1,99 @@
+---
+name: cortex-visualization
+description: Create reproducible 2D cortical atlas figures from region-level ROI tables with Python and R backends using shared ggseg-derived polygon assets. Use when Codex needs to render cortical parcellation maps, validate cortex ROI labels, export R ggseg atlas polygons for Python/R parity, match the existing subcortex-visualization flat vector style, compare Python ggseg-style outputs with R ggseg outputs, troubleshoot cortex parcel boundaries or jagged outlines, or write Methods/captions/provenance for ggseg-based cortical figures.
+---
+
+# Cortex Visualization
+
+Create flat, 2D, publication-oriented cortical atlas maps that can be reproduced from either Python or R while using the same polygon geometry and colors.
+
+## First move: backend gate and contract
+
+For any task that will generate, preview, export, or debug a figure, establish the backend first.
+
+If the user has not chosen Python or R, ask one concise question and stop:
+
+"Do you want Python or R for the final rendering? Python is better for Python analysis pipelines; R is better if you want native ggplot/ggseg integration. I can keep both visually matched by using shared polygon CSV plus shared `fill_hex`."
+
+After backend selection, establish a small figure contract:
+
+1. **Atlas**: e.g. DK/desikan, aseg-like cortical atlas, or another R `ggseg` atlas to export.
+2. **Input table**: ROI label/region column and numeric value column.
+3. **Match key**: `label` is preferred for exact ggseg parity; `region` is acceptable when labels are absent.
+4. **Color scale**: signed diverging with midpoint, or sequential magnitude scale.
+5. **Output**: SVG/PDF as primary, PNG as preview.
+6. **Parity target**: Python-only, R-only, or Python+R matched outputs.
+
+If two or more fields are missing after backend selection, ask one concise question with concrete options. If only one field is missing, choose a sensible default and state it.
+
+## Core rule: shared geometry, not independent native backends
+
+Do not let Python and R independently choose atlas geometries when exact visual parity matters. The reliable workflow is:
+
+```text
+R ggseg atlas -> export canonical polygon CSV -> Python renderer reads CSV
+                                         -> R renderer reads same CSV
+                                         -> optional shared fill_hex for exact colors
+```
+
+The bundled DK asset lives at `assets/atlases/dk_polygons.csv`. Python and R renderers both support a prejoined polygon table with `fill_hex` so the two outputs can match color assignments exactly.
+
+## Boundary/style rule
+
+Match the existing subcortex skill as a flat vector atlas figure:
+
+- white background;
+- matte parcel fills;
+- dark outlines;
+- no Workbench mesh, lighting, curvature, or 3D shading;
+- preserve raw ggseg shared boundaries by default;
+- use SVG/PDF or high-DPI PNG for anti-aliased edges.
+
+Do **not** enable per-parcel smoothing by default. It can make individual cortex parcels look rounder, but it breaks shared boundary fit between adjacent parcels. Read `references/style_contract.md` before changing style defaults and `references/boundary_quality.md` when troubleshooting jagged edges.
+
+## Task routing
+
+1. **Environment check**: read `references/environment_setup.md`; run `scripts/check_cortex_environment.py --backend python`, `--backend r`, or `--backend both`.
+2. **Validate ROI table**: use `scripts/validate_cortex_table.py` before plotting empirical data.
+3. **Python rendering**: read `references/workflows.md`; use `scripts/plot_cortex_table.py`.
+4. **R rendering**: read `references/workflows.md`; use `scripts/plot_cortex_table.R`.
+5. **Export another R ggseg atlas**: use `scripts/export_ggseg_atlas.R`; then validate and render from the exported CSV.
+6. **Boundary or style issue**: read `references/style_contract.md` and `references/boundary_quality.md`.
+7. **ggseg-py upstream contribution planning**: read `references/ggseg_py_alignment.md`.
+8. **Methods/captions/provenance**: read `references/source_scope.md` and `references/methods_and_captions.md`.
+
+## Minimal Python commands
+
+```bash
+python scripts/validate_cortex_table.py --input values.csv --atlas-csv assets/atlases/dk_polygons.csv --match-column label --value-column value --strict
+python scripts/plot_cortex_table.py --input values.csv --atlas-csv assets/atlases/dk_polygons.csv --output-prefix cortex_dk --match-column label --value-column value --vmin -1 --vmax 1 --midpoint 0 --formats svg,pdf,png --write-plot-data cortex_dk_plot_data.csv
+```
+
+## Minimal R commands
+
+```bash
+Rscript scripts/plot_cortex_table.R --plot-data cortex_dk_plot_data.csv --output-prefix cortex_dk_r --formats svg,pdf,png
+```
+
+Use `--plot-data` from the Python step when exact Python/R color parity is required. R can also join values itself with `--input values.csv --atlas-csv assets/atlases/dk_polygons.csv`.
+
+## Required checks before final delivery
+
+- Report matched and unmatched ROI names.
+- Confirm whether `label` or `region` was used as the join key.
+- Confirm atlas asset path and export source.
+- Confirm SVG/PDF paths and PNG preview path.
+- State whether outputs are Python-only, R-only, or Python/R parity outputs.
+- If smoothing was used, explicitly label it experimental and inspect boundary fit.
+
+## Related files
+
+| File | Open when |
+|---|---|
+| `references/environment_setup.md` | Need Python/R dependency setup or diagnostics |
+| `references/workflows.md` | Need exact render/export commands |
+| `references/style_contract.md` | Need subcortex-matched visual defaults |
+| `references/boundary_quality.md` | Need to handle jagged cortex boundaries without breaking parcel fit |
+| `references/source_scope.md` | Need source grounding and citation boundary |
+| `references/methods_and_captions.md` | Need manuscript Methods, captions, or provenance |
+| `references/ggseg_py_alignment.md` | Need upstream python-ggseg alignment/contribution plan |
