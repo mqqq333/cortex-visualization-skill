@@ -5,13 +5,13 @@
 [![R](https://img.shields.io/badge/R-supported-276DC3)](#)
 [![Validate](https://github.com/mqqq333/cortex-visualization-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/mqqq333/cortex-visualization-skill/actions/workflows/validate.yml)
 
-Codex skill for reproducible 2D cortical atlas visualizations with Python/R dual backends, ggseg-derived polygon assets, and subcortex-style SVG/PDF outputs.
+Codex skill for reproducible 2D cortical atlas visualization with Python/R dual backends, ggseg-derived polygon assets, and a visual style matched to the companion subcortex visualization skill.
 
 ![Bundled cortex atlas showcase](assets/gallery/multi_atlas_showcase.png)
 
 <p align="center"><em>Bundled ggsegverse-derived cortex atlas assets rendered with the same flat, matte, Chaikin-smoothed visual contract.</em></p>
 
-This repository contains an interactive Codex skill for cortical region-level visualization. It guides an agent through backend choice, environment checks, atlas geometry selection, ROI label validation, Python/R parity rendering, style QC, and Methods/caption provenance.
+This repository contains an interactive Codex skill for cortical region-level visualization. It turns the usual cortex-plotting problem — "Python and R can both draw an atlas, but the shapes, colours, and boundaries do not quite match" — into a checked workflow for backend choice, atlas geometry selection, ROI label validation, Python/R parity rendering, style QC, and Methods/caption provenance.
 
 > This repository is an agent skill layer, not a fork or replacement of R `ggseg`, `ggseg3d`, `python-ggseg`, Workbench, FreeSurfer, or Nilearn. It does not vendor the ggseg paper PDF.
 
@@ -28,6 +28,12 @@ This repository contains an interactive Codex skill for cortical region-level vi
 - Troubleshoot jagged boundaries, unmatched labels, or Python/R mismatches.
 - Write concise Methods, captions, and provenance notes.
 - Maintain an upstream `python-ggseg` contribution path for shared polygon atlas support.
+
+## Why this exists
+
+Workbench-style surfaces, native R `ggseg`, and Python ggseg-like plots each have their place. The problem starts when a project needs one consistent figure language across cortex and subcortex, or across Python and R branches of the same analysis.
+
+This skill makes the geometry explicit. R `ggseg`/ggsegverse atlas data are exported once into shared polygon CSV assets; Python and R then render the same coordinates and, when needed, the same precomputed `fill_hex` colours. The result is a flat, matte, reproducible cortical atlas style that can sit next to the subcortex skill without looking like it came from a different plotting universe.
 
 ## Reproduce the showcase
 
@@ -117,6 +123,7 @@ The cortex figures intentionally match the existing subcortex skill's flat-vecto
 - no mesh, curvature, lighting, or Workbench-style surface texture;
 - SVG/PDF primary outputs;
 - PNG previews for quick inspection.
+- exact atlas asset and join key reported in the output notes.
 
 The default display atlas is:
 
