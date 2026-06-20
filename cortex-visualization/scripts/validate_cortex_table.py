@@ -7,7 +7,7 @@ import csv
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_ATLAS = HERE.parent / "assets" / "atlases" / "dk_polygons.csv"
+DEFAULT_ATLAS = HERE.parent / "assets" / "atlases" / "dk_polygons_chaikin.csv"
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:

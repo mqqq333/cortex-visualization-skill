@@ -15,7 +15,7 @@ Validate against the bundled DK polygons:
 ```bash
 python scripts/validate_cortex_table.py \
   --input values.csv \
-  --atlas-csv assets/atlases/dk_polygons.csv \
+  --atlas-csv assets/atlases/dk_polygons_chaikin.csv \
   --match-column label \
   --value-column value \
   --strict
@@ -26,7 +26,7 @@ python scripts/validate_cortex_table.py \
 ```bash
 python scripts/plot_cortex_table.py \
   --input values.csv \
-  --atlas-csv assets/atlases/dk_polygons.csv \
+  --atlas-csv assets/atlases/dk_polygons_chaikin.csv \
   --output-prefix outputs/cortex_dk_python \
   --match-column label \
   --value-column value \
@@ -53,7 +53,7 @@ This avoids tiny color-scale differences across languages.
 ```bash
 Rscript scripts/plot_cortex_table.R \
   --input values.csv \
-  --atlas-csv assets/atlases/dk_polygons.csv \
+  --atlas-csv assets/atlases/dk_polygons_chaikin.csv \
   --output-prefix outputs/cortex_dk_r \
   --match-column label \
   --value-column value \
@@ -80,3 +80,17 @@ label, region, hemi, view, x, y, .group, subgroup, .feature_id
 ```
 
 Keep this schema stable so Python and R renderers can share the same asset.
+
+## 6. Generate the default Chaikin-smoothed display atlas
+
+After exporting a raw R ggseg atlas, generate the smoother display asset used by default:
+
+```bash
+python scripts/smooth_polygon_atlas.py \
+  --input assets/atlases/dk_polygons.csv \
+  --output assets/atlases/dk_polygons_chaikin.csv \
+  --iterations 1 \
+  --ratio 0.25
+```
+
+Use the smoothed CSV for final Python/R figures. Keep the raw CSV for provenance and fallback. Do not apply renderer-level smoothing again unless explicitly experimenting.

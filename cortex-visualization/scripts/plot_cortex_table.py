@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_ATLAS = HERE.parent / "assets" / "atlases" / "dk_polygons.csv"
+DEFAULT_ATLAS = HERE.parent / "assets" / "atlases" / "dk_polygons_chaikin.csv"
 
 
 def parse_hex(text: str) -> tuple[int, int, int]:
@@ -212,6 +212,26 @@ def _catmull_rom_closed(points, samples=8):
     return out
 
 
+def _chaikin_closed(points, iterations=1, ratio=0.25):
+    """One or more Chaikin corner-cutting passes for a closed ring."""
+    pts = points[:]
+    if len(pts) < 3:
+        return pts
+    if pts[0] == pts[-1]:
+        pts = pts[:-1]
+    ratio = max(0.0, min(0.5, float(ratio)))
+    for _ in range(max(0, int(iterations))):
+        out = []
+        n = len(pts)
+        for i in range(n):
+            p = pts[i]
+            q = pts[(i + 1) % n]
+            out.append(((1 - ratio) * p[0] + ratio * q[0], (1 - ratio) * p[1] + ratio * q[1]))
+            out.append((ratio * p[0] + (1 - ratio) * q[0], ratio * p[1] + (1 - ratio) * q[1]))
+        pts = out
+    return pts
+
+
 def smooth_ring(points, mode, tolerance, samples):
     """Optional per-parcel visual smoothing.
 
@@ -225,6 +245,8 @@ def smooth_ring(points, mode, tolerance, samples):
         return _simplify_closed(points, tolerance)
     if mode == "catmull":
         return _catmull_rom_closed(points, samples=samples)
+    if mode == "chaikin":
+        return _chaikin_closed(points, iterations=1, ratio=0.25)
     if mode == "simplify-catmull":
         return _catmull_rom_closed(_simplify_closed(points, tolerance), samples=samples)
     raise ValueError(f"Unknown smoothing mode: {mode}")
@@ -313,7 +335,7 @@ def main() -> int:
     p.add_argument("--title-size", type=float, default=18)
     p.add_argument("--figsize", default="12,8")
     p.add_argument("--pad", type=float, default=0.04)
-    p.add_argument("--smooth-boundaries", default="none", choices=["none", "simplify", "catmull", "simplify-catmull"], help="Experimental per-parcel smoothing. Default none preserves ggseg shared-boundary topology; smoothing can create gaps/overlaps.")
+    p.add_argument("--smooth-boundaries", default="none", choices=["none", "simplify", "catmull", "simplify-catmull", "chaikin"], help="Experimental per-parcel smoothing. Default none because the recommended Chaikin style is normally applied once to the shared atlas CSV; runtime smoothing is for experiments.")
     p.add_argument("--smooth-tolerance", type=float, default=4.0, help="Coordinate tolerance for boundary simplification before smoothing")
     p.add_argument("--smooth-samples", type=int, default=8, help="Catmull-Rom samples per simplified segment")
     p.add_argument("--formats", default="svg,pdf,png")

@@ -44,7 +44,7 @@ for tile in sub_tiles:
 
 # checklist
 check_x, check_y = 50, 1010
-d.text((check_x, check_y), "Decision: preserve raw ggseg shared boundaries by default; use SVG/PDF or high-DPI PNG for anti-aliased edges, not per-parcel smoothing.", fill="#333333", font=small_font)
+d.text((check_x, check_y), "Decision: use one-pass Chaikin-smoothed shared atlas by default; Python/R both render the same smoothed coordinates for parity.", fill="#333333", font=small_font)
 out.parent.mkdir(parents=True, exist_ok=True)
 canvas.save(out, quality=95)
 print(out)

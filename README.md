@@ -4,7 +4,7 @@ Codex skill for reproducible 2D cortical atlas visualizations with Python/R dual
 
 ## Core idea
 
-Use R `ggseg` as the canonical atlas polygon source, export a shared polygon CSV, and render that same CSV from either Python or R:
+Use R `ggseg` as the canonical atlas polygon source, export a shared polygon CSV, optionally generate a one-pass Chaikin-smoothed display CSV, and render that same CSV from either Python or R:
 
 ```text
 R ggseg atlas -> shared polygon CSV -> Python renderer
@@ -19,7 +19,7 @@ The visual target is the same family as the existing subcortex visualization ski
 
 ## Boundary decision
 
-Raw ggseg cortex boundaries can look jagged, but independent per-parcel smoothing breaks shared boundary fit. The default therefore preserves raw ggseg topology and relies on SVG/PDF/high-DPI anti-aliasing. Experimental smoothing remains available only for exploration.
+Raw ggseg cortex boundaries can look jagged. The default display asset now uses one-pass Chaikin smoothing (`dk_polygons_chaikin.csv`) because it gives a smoother subcortex-like cortex style while visually fitting better than the Catmull-Rom experiment. The raw `dk_polygons.csv` asset is retained for provenance and fallback. Runtime smoothing remains off by default so Python and R render the same coordinates.
 
 See:
 
@@ -34,7 +34,7 @@ $skill="$proj\cortex-visualization"
 
 py -3.12 "$skill\scripts\plot_cortex_table.py" `
   --input "$skill\assets\examples\dk_demo_values.csv" `
-  --atlas-csv "$skill\assets\atlases\dk_polygons.csv" `
+  --atlas-csv "$skill\assets\atlases\dk_polygons_chaikin.csv" `
   --output-prefix "$proj\demo\cortex_dk_demo_python" `
   --match-column label `
   --value-column value `
@@ -53,7 +53,7 @@ $env:R_LIBS_USER='C:\Users\mqqq3333\R\win-library\4.6'
 
 ## Upstream contribution direction
 
-`cortex-visualization/references/ggseg_py_alignment.md` drafts a possible `python-ggseg` contribution: support R `ggseg`-exported polygon assets as a first-class input path so Python and R outputs can be aligned reproducibly.
+`cortex-visualization/references/ggseg_py_alignment.md` and `docs/ggseg_py_interop_proposal.md` draft a possible `python-ggseg` contribution: support R `ggseg`-exported polygon assets as a first-class input path so Python and R outputs can be aligned reproducibly.
 
 ## Citation
 

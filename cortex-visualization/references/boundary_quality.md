@@ -1,18 +1,22 @@
-# Boundary quality and smoothing decision
+# Boundary quality and Chaikin smoothing decision
 
 ## Observed issue
 
 Raw ggseg cortex polygons can look more jagged than the existing subcortex figures because the cortical parcel paths contain many angular coordinate steps. This is visually different from smoother subcortical/cerebellar vector paths.
 
-## Rejected default: per-parcel smoothing
+## Smoothing comparison
 
-A `simplify + Catmull-Rom` experiment made individual cortical parcels appear rounder, but it changed each parcel independently. Adjacent parcels no longer used exactly the same shared edge, so the audit image showed imperfect boundary fit, small gaps, and overlap-like seams.
-
-Therefore per-parcel smoothing must **not** be the default for final figures.
+The initial `simplify + Catmull-Rom` experiment made individual parcels rounder but caused visible boundary misfit in some areas. The one-pass Chaikin option looked smoother while preserving a better visual fit in the audit image.
 
 ## Default decision
 
-Preserve the raw shared ggseg polygon topology and improve perceived edge quality through rendering choices:
+Use one-pass Chaikin smoothing as a **canonical atlas preprocessing step** and render the resulting shared CSV in both Python and R:
+
+```text
+dk_polygons.csv -> smooth_polygon_atlas.py -> dk_polygons_chaikin.csv
+```
+
+The renderer defaults remain `--smooth-boundaries none` so the smoothed asset is not smoothed a second time. This keeps Python/R outputs aligned because both backends read identical coordinates. Recommended rendering settings remain:
 
 - SVG/PDF as the primary deliverables;
 - high-DPI PNG previews;
@@ -29,4 +33,4 @@ Use one of these future-safe strategies instead of independent per-parcel smooth
 3. Make a display-only SVG post-processing pass that smooths shared paths consistently.
 4. Clearly label any independent smoothing as experimental and inspect every region boundary.
 
-The current skill keeps `--smooth-boundaries none` by default. Experimental options remain available only for visual exploration.
+The current skill keeps renderer-level `--smooth-boundaries none` by default because `dk_polygons_chaikin.csv` is already smoothed. Experimental runtime smoothing options remain available only for visual exploration.

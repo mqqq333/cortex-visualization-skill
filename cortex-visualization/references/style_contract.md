@@ -12,7 +12,7 @@ Required visual features:
 - matte filled parcels, no lighting, curvature, mesh, or 3D shading;
 - dark parcel outlines (`#2E2E2E`);
 - default cortex outline width `0.55` in the bundled renderers;
-- preserve the ggseg polygon topology by default (`--smooth-boundaries none`);
+- use the shared Chaikin-smoothed atlas asset by default (`dk_polygons_chaikin.csv`) and keep renderer-level `--smooth-boundaries none`;
 - SVG/PDF as primary outputs, PNG as preview;
 - explicit `fill_hex` colors for Python/R parity when exact consistency matters.
 
@@ -28,11 +28,7 @@ It compares the new cortex demo against representative panels from the existing 
 
 Conclusion: the cortex renderer is in the same flat/vector family as the existing subcortex figures after bumping default outlines from `0.35` to `0.55`.
 
-Boundary caveat: do **not** make per-parcel smoothing the default. A `simplify + Catmull-Rom`
-experiment made individual parcel outlines look rounder, but adjacent cortical parcels no
-longer shared exactly the same boundary, producing visible non-fitting edges. Treat smoothing
-as an experimental preview only. For final Python/R parity figures, keep raw shared polygons
-and rely on vector export, anti-aliasing, high-DPI PNG previews, line join style, and line width.
+Boundary decision: use one-pass Chaikin smoothing as a **canonical atlas preprocessing step**, not as a backend-specific render-time effect. This produced a smoother cortex style than the raw ggseg polygons and looked better than the `simplify + Catmull-Rom` experiment. For Python/R parity, both renderers should read the same `dk_polygons_chaikin.csv` and should not apply extra smoothing during rendering. Keep `dk_polygons.csv` as the raw provenance asset and fallback.
 
 ## Important distinction
 

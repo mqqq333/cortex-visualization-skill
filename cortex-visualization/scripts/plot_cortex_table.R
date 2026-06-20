@@ -11,7 +11,7 @@ script_file <- function() {
 }
 parse_args <- function() {
   x <- commandArgs(trailingOnly = TRUE)
-  default_atlas <- file.path(dirname(dirname(script_file())), "assets", "atlases", "dk_polygons.csv")
+  default_atlas <- file.path(dirname(dirname(script_file())), "assets", "atlases", "dk_polygons_chaikin.csv")
   out <- list(
     input = NULL,
     plot_data = NULL,
