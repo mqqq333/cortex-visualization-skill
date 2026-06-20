@@ -54,8 +54,7 @@ jobs:
           ]
           for rel in required:
               assert (root / rel).exists(), f'missing {rel}'
-          assert Path('assets/gallery/cortex_showcase.png').exists(), 'missing README gallery image'
-          assert Path('assets/gallery/multi_atlas_showcase.png').exists(), 'missing multi-atlas gallery image'
+          assert Path('assets/gallery/multi_atlas_showcase.png').exists(), 'missing README multi-atlas gallery image'
           assert Path('demo/STYLE_AUDIT_cortex_vs_subcortex.png').exists(), 'missing style audit demo'
           print('skill structure ok')
           PY

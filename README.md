@@ -7,10 +7,6 @@
 
 Codex skill for reproducible 2D cortical atlas visualizations with Python/R dual backends, ggseg-derived polygon assets, and subcortex-style SVG/PDF outputs.
 
-![Cortex showcase](assets/gallery/cortex_showcase.png)
-
-<p align="center"><em>Locally generated cortex showcase: Python and R render the same Chaikin-smoothed ggseg-derived geometry and shared colours.</em></p>
-
 ![Bundled cortex atlas showcase](assets/gallery/multi_atlas_showcase.png)
 
 <p align="center"><em>Bundled ggsegverse-derived cortex atlas assets rendered with the same flat, matte, Chaikin-smoothed visual contract.</em></p>
@@ -35,17 +31,7 @@ This repository contains an interactive Codex skill for cortical region-level vi
 
 ## Reproduce the showcase
 
-The hero image is generated locally from tracked demo outputs:
-
-```bash
-python cortex-visualization/scripts/make_cortex_showcase.py \
-  --project-root . \
-  --output assets/gallery/cortex_showcase.png
-```
-
-The underlying Python/R demo uses the same atlas coordinates and the same prejoined `fill_hex` colours.
-
-The multi-atlas gallery is generated from the bundled atlas CSVs:
+The README hero is the multi-atlas gallery generated from the bundled atlas CSVs:
 
 ```bash
 python cortex-visualization/scripts/make_multi_atlas_showcase.py \
@@ -247,9 +233,7 @@ demo/SMOOTHING_EXPERIMENT_cortex_boundaries.png
 Gallery images live under `assets/gallery/`:
 
 ```text
-assets/gallery/cortex_showcase.png
 assets/gallery/multi_atlas_showcase.png
-assets/gallery/python_r_shared_dk_compare.png
 ```
 
 ## Output philosophy
