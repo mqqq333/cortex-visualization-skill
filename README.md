@@ -1,60 +1,235 @@
-# cortex-visualization-skill
+# cortex-visualization skill
+
+[![Codex Skill](https://img.shields.io/badge/Codex-skill-111827)](#)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](#)
+[![R](https://img.shields.io/badge/R-supported-276DC3)](#)
+[![Validate](https://github.com/mqqq333/cortex-visualization-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/mqqq333/cortex-visualization-skill/actions/workflows/validate.yml)
 
 Codex skill for reproducible 2D cortical atlas visualizations with Python/R dual backends, ggseg-derived polygon assets, and subcortex-style SVG/PDF outputs.
 
-## Core idea
+![Cortex showcase](assets/gallery/cortex_showcase.png)
 
-Use R `ggseg` as the canonical atlas polygon source, export a shared polygon CSV, optionally generate a one-pass Chaikin-smoothed display CSV, and render that same CSV from either Python or R:
+<p align="center"><em>Locally generated cortex showcase: Python and R render the same Chaikin-smoothed ggseg-derived geometry and shared colours.</em></p>
 
-```text
-R ggseg atlas -> shared polygon CSV -> Python renderer
-                              \-> R renderer
+This repository contains an interactive Codex skill for cortical region-level visualization. It guides an agent through backend choice, environment checks, atlas geometry selection, ROI label validation, Python/R parity rendering, style QC, and Methods/caption provenance.
+
+> This repository is an agent skill layer, not a fork or replacement of R `ggseg`, `ggseg3d`, `python-ggseg`, Workbench, FreeSurfer, or Nilearn. It does not vendor the ggseg paper PDF.
+
+## What it helps with
+
+- Choose **Python or R** before plotting.
+- Use R `ggseg` as the canonical polygon source.
+- Render cortical atlas maps from ROI tables.
+- Validate ROI labels against shared atlas geometry.
+- Produce strict Python/R visual parity via shared polygon CSV and shared `fill_hex` colours.
+- Use one-pass Chaikin-smoothed display geometry for a smoother subcortex-like cortex style.
+- Export editable SVG/PDF figures with PNG previews.
+- Troubleshoot jagged boundaries, unmatched labels, or Python/R mismatches.
+- Write concise Methods, captions, and provenance notes.
+- Maintain an upstream `python-ggseg` contribution path for shared polygon atlas support.
+
+## Reproduce the showcase
+
+The hero image is generated locally from tracked demo outputs:
+
+```bash
+python cortex-visualization/scripts/make_cortex_showcase.py \
+  --project-root . \
+  --output assets/gallery/cortex_showcase.png
 ```
 
-When exact Python/R parity matters, compute `fill_hex` once and pass the same prejoined plot-data CSV to both renderers.
+The underlying Python/R demo uses the same atlas coordinates and the same prejoined `fill_hex` colours.
 
-## Why not Workbench?
+## Try it in 30 seconds
 
-The visual target is the same family as the existing subcortex visualization skill: flat 2D polygons, white background, matte fills, dark outlines, and vector export. Workbench/fsLR surface renders have a different mesh/curvature/lighting texture.
+Validate and plot the bundled DK demo ROI table:
 
-## Boundary decision
+```bash
+python cortex-visualization/scripts/check_cortex_environment.py --backend python
+python cortex-visualization/scripts/validate_cortex_table.py \
+  --input cortex-visualization/assets/examples/dk_demo_values.csv \
+  --atlas-csv cortex-visualization/assets/atlases/dk_polygons_chaikin.csv \
+  --match-column label \
+  --value-column value \
+  --strict
+python cortex-visualization/scripts/plot_cortex_table.py \
+  --input cortex-visualization/assets/examples/dk_demo_values.csv \
+  --atlas-csv cortex-visualization/assets/atlases/dk_polygons_chaikin.csv \
+  --output-prefix demo/cortex_dk_demo_python \
+  --match-column label \
+  --value-column value \
+  --vmin -1 --vmax 1 --midpoint 0 \
+  --formats png,svg,pdf \
+  --write-plot-data demo/cortex_dk_demo_plot_data.csv
+```
 
-Raw ggseg cortex boundaries can look jagged. The default display asset now uses one-pass Chaikin smoothing (`dk_polygons_chaikin.csv`) because it gives a smoother subcortex-like cortex style while visually fitting better than the Catmull-Rom experiment. The raw `dk_polygons.csv` asset is retained for provenance and fallback. Runtime smoothing remains off by default so Python and R render the same coordinates.
+Render the same plot-data table from R for strict visual parity:
 
-See:
-
-- `cortex-visualization/references/boundary_quality.md`
-- `cortex-visualization/references/style_contract.md`
-
-## Reproduce demo
-
-```powershell
-$proj='E:\learn_pytorch\pythonProject\cortex-visualization-skill-project'
-$skill="$proj\cortex-visualization"
-
-py -3.12 "$skill\scripts\plot_cortex_table.py" `
-  --input "$skill\assets\examples\dk_demo_values.csv" `
-  --atlas-csv "$skill\assets\atlases\dk_polygons_chaikin.csv" `
-  --output-prefix "$proj\demo\cortex_dk_demo_python" `
-  --match-column label `
-  --value-column value `
-  --vmin -1 --vmax 1 --midpoint 0 `
-  --title "Cortex DK demo - Python" `
-  --formats png,svg,pdf `
-  --write-plot-data "$proj\demo\cortex_dk_demo_plot_data.csv"
-
-$env:R_LIBS_USER='C:\Users\mqqq3333\R\win-library\4.6'
-& 'C:\Program Files\R\R-4.6.0\bin\Rscript.exe' "$skill\scripts\plot_cortex_table.R" `
-  --plot-data "$proj\demo\cortex_dk_demo_plot_data.csv" `
-  --output-prefix "$proj\demo\cortex_dk_demo_r" `
-  --title "Cortex DK demo - R" `
+```bash
+Rscript cortex-visualization/scripts/plot_cortex_table.R \
+  --plot-data demo/cortex_dk_demo_plot_data.csv \
+  --output-prefix demo/cortex_dk_demo_r \
   --formats png,svg,pdf
 ```
 
-## Upstream contribution direction
+## Quick start
 
-`cortex-visualization/references/ggseg_py_alignment.md` and `docs/ggseg_py_interop_proposal.md` draft a possible `python-ggseg` contribution: support R `ggseg`-exported polygon assets as a first-class input path so Python and R outputs can be aligned reproducibly.
+Copy the skill folder into your Codex skills directory:
+
+```text
+cortex-visualization/
+```
+
+Then ask Codex, for example:
+
+```text
+Use the cortex-visualization skill. I have a cortical ROI table and want a DK ggseg-style map.
+```
+
+For a first test without real data:
+
+```text
+Use the cortex-visualization skill. Generate simulated DK values and make matching Python/R preview figures.
+```
+
+## Interaction pattern
+
+The skill follows the same compact figure-design loop as the subcortex skill:
+
+```text
+backend -> environment check -> figure contract -> atlas/label validation -> preview/export -> QC -> revision
+```
+
+The first question is usually:
+
+```text
+Do you want Python or R for the final rendering?
+```
+
+Python is better for Python analysis pipelines and batch rendering. R is better for native ggseg export, tidyverse, and ggplot workflows. Exact Python/R parity is achieved by shared polygon geometry plus shared `fill_hex` colours.
+
+## Core visual contract
+
+The cortex figures intentionally match the existing subcortex skill's flat-vector visual language:
+
+- white background;
+- matte parcel fills;
+- dark outlines;
+- no mesh, curvature, lighting, or Workbench-style surface texture;
+- SVG/PDF primary outputs;
+- PNG previews for quick inspection.
+
+The default display atlas is:
+
+```text
+cortex-visualization/assets/atlases/dk_polygons_chaikin.csv
+```
+
+It is generated from the raw R ggseg-derived geometry:
+
+```text
+cortex-visualization/assets/atlases/dk_polygons.csv
+```
+
+using:
+
+```bash
+python cortex-visualization/scripts/smooth_polygon_atlas.py \
+  --input cortex-visualization/assets/atlases/dk_polygons.csv \
+  --output cortex-visualization/assets/atlases/dk_polygons_chaikin.csv \
+  --iterations 1 \
+  --ratio 0.25
+```
+
+## Environment support
+
+The skill includes a diagnostic helper:
+
+```bash
+python cortex-visualization/scripts/check_cortex_environment.py --backend both
+```
+
+Python rendering requires `matplotlib`. R rendering requires `Rscript` plus `ggplot2`; atlas export from R requires `ggseg`/`ggseg.formats` availability.
+
+## Included bundle
+
+```text
+cortex-visualization/
+|-- SKILL.md
+|-- agents/
+|   `-- openai.yaml
+|-- assets/
+|   |-- atlases/
+|   |   |-- dk_polygons.csv
+|   |   `-- dk_polygons_chaikin.csv
+|   `-- examples/
+|       `-- dk_demo_values.csv
+|-- references/
+|   |-- interactive_workflow.md
+|   |-- environment_setup.md
+|   |-- workflows.md
+|   |-- scene_recipes.md
+|   |-- style_contract.md
+|   |-- boundary_quality.md
+|   |-- troubleshooting.md
+|   `-- ...
+`-- scripts/
+    |-- check_cortex_environment.py
+    |-- export_ggseg_atlas.R
+    |-- make_cortex_showcase.py
+    |-- plot_cortex_table.py
+    |-- plot_cortex_table.R
+    |-- smooth_polygon_atlas.py
+    `-- validate_cortex_table.py
+```
+
+## Demo artifacts
+
+Tracked demo outputs live under `demo/`:
+
+```text
+demo/cortex_dk_demo_python.png/svg/pdf
+demo/cortex_dk_demo_r.png/svg/pdf
+demo/cortex_dk_demo_plot_data.csv
+demo/STYLE_AUDIT_cortex_vs_subcortex.png
+demo/SMOOTHING_EXPERIMENT_cortex_boundaries.png
+```
+
+Gallery images live under `assets/gallery/`:
+
+```text
+assets/gallery/cortex_showcase.png
+assets/gallery/python_r_shared_dk_compare.png
+```
+
+## Output philosophy
+
+The skill treats each figure as a visual argument, not a decorative brain icon. It prefers exact atlas labels, validated region names, conservative color scales, shared geometry for reproducibility, editable vector outputs, and explicit provenance.
+
+## Source boundary
+
+This skill was written from public materials for the ggseg ecosystem, including the ggseg homepage, the ggseg/ggseg3d paper, and local experiments comparing R and Python outputs. Build-only local materials and the paper PDF are not intended to be committed unless explicitly needed.
+
+## Upstream contribution
+
+A related `python-ggseg` PR proposes and implements a minimal shared polygon atlas interoperability API:
+
+```text
+https://github.com/ggsegverse/python-ggseg/pull/10
+```
+
+Local context notes are saved in:
+
+```text
+docs/python_ggseg_pr_10_context.md
+```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mqqq333/cortex-visualization-skill&type=Date)](https://www.star-history.com/#mqqq333/cortex-visualization-skill&Date)
 
 ## Citation
+
+If you use the underlying ggseg ecosystem, please cite:
 
 Mowinckel AM, Vidal-Pi?eiro D. Visualization of Brain Statistics With R Packages ggseg and ggseg3d. *Advances in Methods and Practices in Psychological Science*. 2020;3(4):466-483. doi:10.1177/2515245920928009

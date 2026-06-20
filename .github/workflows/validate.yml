@@ -1,0 +1,63 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate skill structure and tracked assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path('cortex-visualization')
+          skill = root / 'SKILL.md'
+          assert skill.exists(), 'missing SKILL.md'
+          text = skill.read_text(encoding='utf-8')
+          assert text.startswith('---\n'), 'missing YAML frontmatter'
+          assert re.search(r'^name:\s*cortex-visualization\s*$', text, re.M), 'wrong skill name'
+          assert re.search(r'^description:\s*.+', text, re.M), 'missing description'
+          required = [
+              'agents/openai.yaml',
+              'references/interactive_workflow.md',
+              'references/environment_setup.md',
+              'references/workflows.md',
+              'references/scene_recipes.md',
+              'references/style_contract.md',
+              'references/boundary_quality.md',
+              'references/troubleshooting.md',
+              'scripts/check_cortex_environment.py',
+              'scripts/plot_cortex_table.py',
+              'scripts/plot_cortex_table.R',
+              'scripts/export_ggseg_atlas.R',
+              'scripts/smooth_polygon_atlas.py',
+              'scripts/make_cortex_showcase.py',
+              'scripts/validate_cortex_table.py',
+              'assets/atlases/dk_polygons.csv',
+              'assets/atlases/dk_polygons_chaikin.csv',
+              'assets/examples/dk_demo_values.csv',
+          ]
+          for rel in required:
+              assert (root / rel).exists(), f'missing {rel}'
+          assert Path('assets/gallery/cortex_showcase.png').exists(), 'missing README gallery image'
+          assert Path('demo/STYLE_AUDIT_cortex_vs_subcortex.png').exists(), 'missing style audit demo'
+          print('skill structure ok')
+          PY
+      - name: Compile Python helper scripts
+        run: |
+          python -m py_compile cortex-visualization/scripts/*.py
+      - name: Validate bundled demo table
+        run: |
+          python cortex-visualization/scripts/validate_cortex_table.py \
+            --input cortex-visualization/assets/examples/dk_demo_values.csv \
+            --atlas-csv cortex-visualization/assets/atlases/dk_polygons_chaikin.csv \
+            --match-column label \
+            --value-column value \
+            --strict

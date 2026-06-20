@@ -7,7 +7,7 @@ description: Create reproducible 2D cortical atlas figures from region-level ROI
 
 Create flat, 2D, publication-oriented cortical atlas maps that can be reproduced from either Python or R while using the same polygon geometry and colors.
 
-## First move: backend gate and contract
+## First move: backend gate, then visualization contract
 
 For any task that will generate, preview, export, or debug a figure, establish the backend first.
 
@@ -51,6 +51,28 @@ Match the existing subcortex skill as a flat vector atlas figure:
 
 Do **not** apply runtime smoothing on top of the default smoothed asset. The recommended style is to smooth the atlas once into a canonical CSV, then let both Python and R render that same CSV. Read `references/style_contract.md` and `references/boundary_quality.md` before changing style defaults.
 
+## Backend rules
+
+- **Python track**: use `scripts/validate_cortex_table.py`, `scripts/plot_cortex_table.py`, and `scripts/smooth_polygon_atlas.py`. Use this track for Python analysis pipelines, batch rendering, and writing shared `fill_hex` plot-data CSVs.
+- **R track**: use `scripts/export_ggseg_atlas.R` and `scripts/plot_cortex_table.R`. Use this track for native R ggseg export, tidyverse/ggplot workflows, and R-only figure production.
+- For exact Python/R parity, do not let each backend independently choose geometry or colors. Use one shared atlas CSV and, ideally, one shared plot-data CSV with `fill_hex`.
+- Do not silently switch final rendering backend. If the selected backend is missing dependencies, report the blocker and read `references/environment_setup.md`.
+
+## Default operating stance
+
+- Treat every cortex map as a visual argument, not a decorative brain icon.
+- Prefer the loop: **backend -> environment check -> figure contract -> atlas/label validation -> preview/export -> QC -> revision**.
+- Prefer `label` joins for strict parity; use `region` only when labels are unavailable.
+- Use the Chaikin-smoothed display atlas by default and retain raw ggseg polygons for provenance/debugging.
+- Use signed diverging scales centered at zero for signed statistics; use sequential scales for magnitude-only values.
+- Finish with reproducible commands and a provenance note.
+
+## Source grounding
+
+This skill is grounded in R `ggseg`/`ggseg3d` documentation and the Mowinckel & Vidal-Pi?eiro 2020 paper. It is a skill layer for reproducible cortical region-level figures, not a fork or replacement of ggseg or python-ggseg.
+
+Read `references/source_scope.md` for citation and claim boundaries.
+
 ## Task routing
 
 1. **Environment check**: read `references/environment_setup.md`; run `scripts/check_cortex_environment.py --backend python`, `--backend r`, or `--backend both`.
@@ -60,7 +82,9 @@ Do **not** apply runtime smoothing on top of the default smoothed asset. The rec
 5. **Export another R ggseg atlas**: use `scripts/export_ggseg_atlas.R`; then validate and render from the exported CSV.
 6. **Boundary or style issue**: read `references/style_contract.md` and `references/boundary_quality.md`.
 7. **ggseg-py upstream contribution planning**: read `references/ggseg_py_alignment.md`.
-8. **Methods/captions/provenance**: read `references/source_scope.md` and `references/methods_and_captions.md`.
+8. **Interactive intake or broad figure request**: read `references/interactive_workflow.md` and `references/scene_recipes.md`.
+9. **Troubleshooting/QC**: read `references/troubleshooting.md`.
+10. **Methods/captions/provenance**: read `references/source_scope.md` and `references/methods_and_captions.md`.
 
 ## Minimal Python commands
 
@@ -86,14 +110,38 @@ Use `--plot-data` from the Python step when exact Python/R color parity is requi
 - State whether outputs are Python-only, R-only, or Python/R parity outputs.
 - If smoothing was used, explicitly label it experimental and inspect boundary fit.
 
+## Environment diagnostic
+
+```bash
+python scripts/check_cortex_environment.py --backend both
+```
+
+## Output standard
+
+When relevant, produce:
+
+- backend choice and figure contract;
+- validated ROI table or prejoined plot-data CSV;
+- SVG/PDF figure plus optional PNG preview;
+- unmatched-label and missing-value diagnostics;
+- exact commands needed to reproduce the output;
+- short provenance and claim-boundary note.
+
+## Claim boundary
+
+A cortex ggseg-style map visualizes atlas-level, region-level values on a 2D cortical schematic. It does not by itself establish biological causality, subject-native anatomy, vertex-wise effects, statistical significance, or equivalence across atlases.
+
 ## Related files
 
 | File | Open when |
 |---|---|
+| `references/interactive_workflow.md` | Need to guide backend choice and figure contract |
 | `references/environment_setup.md` | Need Python/R dependency setup or diagnostics |
 | `references/workflows.md` | Need exact render/export commands |
+| `references/scene_recipes.md` | Need to propose demos/showcase panels |
 | `references/style_contract.md` | Need subcortex-matched visual defaults |
 | `references/boundary_quality.md` | Need to handle jagged cortex boundaries without breaking parcel fit |
 | `references/source_scope.md` | Need source grounding and citation boundary |
 | `references/methods_and_captions.md` | Need manuscript Methods, captions, or provenance |
+| `references/troubleshooting.md` | Need QC or bug diagnosis |
 | `references/ggseg_py_alignment.md` | Need upstream python-ggseg alignment/contribution plan |
